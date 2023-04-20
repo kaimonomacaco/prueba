@@ -1,0 +1,133 @@
+// cargar personas
+// listar personas
+// agregar personas
+// editar personas
+// borrar personas
+
+/*
+Persona
+id
+nombre
+apellido
+cin ->
+direccion-> textbox
+Ciudad_id
+fecha_nac
+*/
+
+var personas = [];
+var pdatos = [];
+pdatos.push({id:1, nombre:"Ivan", apellido:"davalos", cin:5549165, direccion: "pacu cua", Ciudad_id:1, fecha_nac:"01/11/2002"});
+pdatos.push({id:2, nombre:"Abril", apellido:"pereira", cin:5379699, direccion:"San Pedro", Ciudad_id:2, fecha_nac:"11/04/2003"});
+pdatos.push({id:3, nombre:"Mario", apellido:"Oleiñik", cin:5576308, direccion:"Bernardino Benitez", Ciudad_id:4, fecha_nac:"06/21/2004"});
+
+function pcargar() {
+var data = localStorage.getItem("data");
+if (!data || data == "") {
+	//console.log("entro a la condicion");
+	let aux = JSON.stringify(pdatos);
+	ciudades = JSON.parse(aux);
+} else {
+	ciudades = JSON.parse(data);
+}
+dibujarTabla();
+}
+
+function dibujarTabla() {
+var lista = document.getElementById("lista");
+var thead = '<table class="table table-dark"><thead><tr><th>id</th><th>Nombre</th><th>Apellido</th><th>CIN</th><th>Direccion</th><th>Ciudad_id</th><th>Fecha_nac</th><th colspan="2"><button id="btnew" class="btn btn-primary">Nuevo</button></th></tr></thead><tbody>';
+var tfoot = '</tbody></table>';
+var tbody = "";
+personas.forEach((e) => {
+tbody += "<tr><td>" +
+e.id +
+"</td><td>" +
+e.nombre +
+"</td><td>" +
+e.apellido +
+"</td><td>" +
+e.cin +
+"</td><td>" +
+e.direccion +
+"</td><td>" +
+e.Ciudad_id +
+"</td><td>" +
+e.fecha_nac +
+"</td><td><button data-id='" +
+   e.id +
+   "' class='btn btn-warning btedit'>Editar</button></td><td><button data-id='" +
+   e.id +
+   "' class='btn btn-danger btdel'>Borrar</button></td></tr>";
+});
+lista.innerHTML = thead + tbody + tfoot;
+addEventosClk();
+}
+
+function addEventosClk() {
+var btnEditar = document.getElementsByClassName("btedit");
+for (let i = 0; i < btnEditar.length; i++) {
+btnEditar[i].addEventListener("click", clkeditar);
+}
+var btnNuevo = document.getElementById("btnew");
+btnNuevo.addEventListener("click", clknuevo);
+var btnBorrar = document.getElementsByClassName("btdel");
+for (let i = 0; i < btnBorrar.length; i++) {
+btnBorrar[i].addEventListener("click", clkborrar);
+}
+}
+
+function clknuevo() {
+document.getElementById("id").value = -1;
+document.getElementById("nombre").value = "";
+document.getElementById("apellido").value = "";
+document.getElementById("cin").value = "";
+document.getElementById("direccion").value = "";
+document.getElementById("ciudad_id").value = "";
+document.getElementById("fecha_nac").value = "";
+function pguardar() {
+	var gid = document.getElementById("id").value;
+	var gnombre = document.getElementById("nombre").value;
+	console.log(gid + " - " + gnombre);
+	if (gid == -1) {
+		console.log("nuevo item");
+		gid = personas[personas.length - 1].id + 1;
+		personas.push({ id: gid, nombre: gnombre });
+	} else {
+		console.log("editar item");
+		personas.forEach((e) => {
+			if (gid == e.id) {
+				e.nombre = gnombre;
+			}
+		});
+	}
+	persistir();
+	dibujarTabla();
+}
+
+function validar() {
+    var campos = ["nombre", "apellido", "cin", "direccion", "ciudad_id", "fecha_nac"];
+    var valido = true;
+    campos.forEach((campo) => {
+        var valor = document.getElementById(campo).value;
+        if (!valor || valor === "") {
+            valido = false;
+            document.getElementById(campo).classList.add("is-invalid");
+        } else {
+            document.getElementById(campo).classList.remove("is-invalid");
+        }
+    });
+    return valido;
+}
+
+function init() {
+    var btnGuardar = document.getElementById("btguardar");
+    btnGuardar.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (validar()) {
+            clkguardar();
+        }
+    });
+}
+
+init();
+}
